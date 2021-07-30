@@ -1,0 +1,148 @@
+<body>
+    <div>
+        <h4>New Book</h4>
+        <input id="newTitle" name="title" value="title">
+        <input id="newAuthor" name="author" value="author">
+        <button onclick="SubmitNewBook()" type="button">Submit</button>
+    </div>
+
+    <div>
+        <h4>Delete a book</h4>
+        <input id="deleteBook" name="delete" value="book ID">
+        <button onclick="DeleteBook()" type="button">Submit</button>
+    </div>
+
+    <div>
+        <div style="display: flex; flex-direction: column; padding-bottom:10px;: ">
+            <h4>Checkout a book</h4>
+            <label for="checkoutRadio">Checkout</label>
+            <input type="radio" name="checkout" id="checkoutRadio" checked>
+            <label for="returnRadio">Return</label>
+            <input type="radio" name="checkout" id="returnRadio">
+        </div>
+        <input id="checkoutID" name="checkout" value="book ID">
+        <button onclick="CheckoutBook()" type="button">Submit</button>
+    </div>
+
+    <div>
+        <h4>Get book by ID</h4>
+        <input id="getBookByID" value="Book ID">
+        <button onclick="GetBookByID()">Get Book</button>
+        <div id="bookByID"></div>
+    </div>
+
+
+    <div>
+        <h4>Get All Books</h4>
+        <button onclick="GetAllBooks()">Get Books</button>
+    </div>
+
+    <div id="booksList"></div>
+
+</body>
+
+<script type="application/javascript">
+    function CheckoutBook() {
+        let val = document.querySelector('input[name="checkout"]:checked').id == "checkoutRadio" ? false : true ;
+        let xhr = new XMLHttpRequest();
+
+        xhr.open('POST', '/checkout', true);
+        xhr.onload = function (res) {
+            console.log(res.target.response);
+        };
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(
+            JSON.stringify({
+                id: Number(document.getElementById('checkoutID').value),
+                available: val,
+                customer: "chezky",
+            })
+        );
+        console.log("checking out book");
+        GetAllBooks();
+    }
+
+    function SubmitNewBook () {
+        let xhr = new XMLHttpRequest();
+
+        xhr.open('POST', '/new', true);
+        xhr.onload = function (res) {
+            console.log(res.target.response);
+        };
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(
+            JSON.stringify({
+                title: document.getElementById('newTitle').value,
+                author: document.getElementById('newAuthor').value
+            })
+        );
+        console.log("submitted new book");
+        GetAllBooks();
+    }
+
+    function DeleteBook () {
+        let xhr = new XMLHttpRequest();
+
+        xhr.open('POST', '/delete', true);
+        xhr.onload = function (res) {
+            console.log(res.target.response);
+        };
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(
+            JSON.stringify({
+                id: Number(document.getElementById('deleteBook').value)
+            })
+        );
+        console.log("deleting book");
+        GetAllBooks();
+    }
+
+
+    function GetAllBooks () {
+        let xhr = new XMLHttpRequest();
+
+        xhr.open('POST', '/get', true);
+        xhr.onload = function (res) {
+            ParseBooks(JSON.parse(res.target.response));
+        };
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send();
+        console.log("getting books");
+    }
+
+    function GetBookByID () {
+        let xhr = new XMLHttpRequest();
+
+        xhr.open('POST', '/get/id', true);
+        xhr.onload = function (res) {
+            let resp = JSON.parse(res.target.response)
+            let par = document.getElementById("bookByID");
+            console.log(resp);
+            let avail = resp.available ? "Available" : "Not Available"
+            par.innerHTML = `${resp.title} --- ${resp.author} --- ${avail} --- ${resp.id}`;
+        };
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(
+            JSON.stringify({
+                id: Number(document.getElementById("getBookByID").value)
+            })
+        );
+        console.log("getting book by ID");
+    }
+
+    function ParseBooks(books) {
+        let parent = document.getElementById("booksList")
+        let ol = document.createElement("ol")
+
+        parent.innerHTML = "";
+
+        books.forEach(el => {
+            let li = document.createElement("li");
+            let avail = el.available ? "Available" : "Not Available"
+            li.id = `listItem${el.id}`
+            li.innerHTML = `${el.title} --- ${el.author} --- ${avail} --- ${el.id}`
+            ol.appendChild(li)
+        });
+        parent.appendChild(ol)
+    }
+</script>
