@@ -120,7 +120,7 @@ func (b *BookList) UpdateListBooks() {
 }
 
 func (s *Search) SearchByTitle() error  {
-	msg := `SELECT title, id, available, author FROM books WHERE title ILIKE $1 Or author ILIKE $1 order by title`
+	msg := `SELECT title, id, available, author FROM books WHERE title ILIKE $1 Or author ILIKE $1 OR customer ILIKE $1 order by title`
 
 	rows, err := db.Query(msg, "%"+s.Query+"%")
 	if err != nil {
