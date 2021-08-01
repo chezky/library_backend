@@ -48,6 +48,8 @@ func Start() {
 		panic(err)
 	}
 
+	createTable()
+
 	fmt.Println("SQL Connected")
 }
 
@@ -118,7 +120,7 @@ func (b *BookList) UpdateListBooks() {
 }
 
 func (s *Search) SearchByTitle() error  {
-	msg := `SELECT title, id, available, author FROM books WHERE title ILIKE $1 order by title`
+	msg := `SELECT title, id, available, author FROM books WHERE title ILIKE $1 Or author ILIKE $1 order by title`
 
 	rows, err := db.Query(msg, "%"+s.Query+"%")
 	if err != nil {
@@ -183,7 +185,7 @@ func GetBooks() ([]Book, error) {
 }
 
 func createTable()  {
-	msg := `CREATE TABLE books (
+	msg := `CREATE TABLE IF NOT EXISTS books (
 	  id SERIAL PRIMARY KEY,
 	  title TEXT NOT NULL ,
 	  author TEXT,
