@@ -39,6 +39,46 @@
 
     <div id="booksList"></div>
 
+
+    <div>
+        <h4>New Account</h4>
+        <input id="newName" name="name" value="name">
+        <input id="newEmail" name="email" value="email">
+        <button onclick="SubmitNewAccount()" type="button">Submit</button>
+    </div>
+
+    <div>
+        <h4>Get account by ID</h4>
+        <input id="getAccountByID" value="Account ID">
+        <button onclick="GetAccountByID()">Get Account</button>
+        <div id="accountByID"></div>
+    </div>
+
+    <div>
+        <h4>Update Account info</h4>
+        <input id="updateAccountID" value="ID">
+        <input id="updateAccountName" value="Name">
+        <input id="updateAccountEmail" value="Email">
+        <label for="emailListTrue">Email Me</label>
+        <input type="radio" name="updateAccount" id="emailListTrue" checked>
+        <label for="emailListFalse">Don't Email Me</label>
+        <input type="radio" name="updateAccount" id="emailListFalse">
+        <button onclick="UpdateAccount()">Submit</button>
+    </div>
+
+    <div>
+        <h4>Delete an account</h4>
+        <input id="deleteAccount" name="delete" value="account ID">
+        <button onclick="DeleteAccount()" type="button">Submit</button>
+    </div>
+
+    <div>
+        <h4>Get All Accounts</h4>
+        <button onclick="GetAllAccounts()">Get Accounts</button>
+    </div>
+
+    <div id="accountsList"></div>
+
 </body>
 
 <script type="application/javascript">
@@ -46,7 +86,7 @@
         let val = document.querySelector('input[name="checkout"]:checked').id == "checkoutRadio" ? false : true ;
         let xhr = new XMLHttpRequest();
 
-        xhr.open('POST', '/checkout', true);
+        xhr.open('POST', '/book/checkout', true);
         xhr.onload = function (res) {
             console.log(res.target.response);
         };
@@ -55,7 +95,7 @@
             JSON.stringify({
                 id: Number(document.getElementById('checkoutID').value),
                 available: val,
-                customer: "chezky",
+                customer_id: 8,
             })
         );
         console.log("checking out book");
@@ -65,7 +105,7 @@
     function SubmitNewBook () {
         let xhr = new XMLHttpRequest();
 
-        xhr.open('POST', '/new', true);
+        xhr.open('POST', '/book/new', true);
         xhr.onload = function (res) {
             console.log(res.target.response);
         };
@@ -83,7 +123,7 @@
     function DeleteBook () {
         let xhr = new XMLHttpRequest();
 
-        xhr.open('POST', '/delete', true);
+        xhr.open('POST', '/book/delete', true);
         xhr.onload = function (res) {
             console.log(res.target.response);
         };
@@ -101,7 +141,7 @@
     function GetAllBooks () {
         let xhr = new XMLHttpRequest();
 
-        xhr.open('POST', '/get', true);
+        xhr.open('POST', '/book/get', true);
         xhr.onload = function (res) {
             ParseBooks(JSON.parse(res.target.response));
         };
@@ -113,7 +153,7 @@
     function GetBookByID () {
         let xhr = new XMLHttpRequest();
 
-        xhr.open('POST', '/get/id', true);
+        xhr.open('POST', '/book/get/id', true);
         xhr.onload = function (res) {
             let resp = JSON.parse(res.target.response)
             let par = document.getElementById("bookByID");
@@ -145,4 +185,93 @@
         });
         parent.appendChild(ol)
     }
+
+    function SubmitNewAccount () {
+        let xhr = new XMLHttpRequest();
+
+        xhr.open('POST', '/account/new', true);
+        xhr.onload = function (res) {
+            console.log(res.target.response);
+        };
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(
+            JSON.stringify({
+                name: document.getElementById('newName').value,
+                email: document.getElementById('newEmail').value
+            })
+        );
+        console.log("submitted new account");
+    }
+
+    function GetAllAccounts () {
+        let xhr = new XMLHttpRequest();
+
+        xhr.open('POST', '/account/get', true);
+        xhr.onload = function (res) {
+            document.getElementById("accountsList").innerHTML=res.target.response;
+        };
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send();
+        console.log("getting accounts");
+    }
+
+    function GetAccountByID () {
+        let xhr = new XMLHttpRequest();
+
+        xhr.open('POST', '/account/get/id', true);
+        xhr.onload = function (res) {
+            let resp = JSON.parse(res.target.response)
+            let par = document.getElementById("accountByID");
+            console.log(resp);
+            par.innerHTML = `${resp.name} --- ${resp.email} --- ${resp.id}`;
+        };
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(
+            JSON.stringify({
+                id: Number(document.getElementById("getAccountByID").value)
+            })
+        );
+        console.log("getting account by ID");
+    }
+
+
+
+    function DeleteAccount () {
+        let xhr = new XMLHttpRequest();
+
+        xhr.open('POST', '/account/delete', true);
+        xhr.onload = function (res) {
+            console.log(res.target.response);
+        };
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(
+            JSON.stringify({
+                id: Number(document.getElementById('deleteAccount').value)
+            })
+        );
+        console.log("deleting account");
+        GetAllAccounts();
+    }
+
+    function UpdateAccount() {
+        let xhr = new XMLHttpRequest();
+        let val = document.querySelector('input[name="updateAccount"]:checked').id == "emailListTrue" ? false : true ;
+
+        xhr.open('POST', '/account/update', true);
+        xhr.onload = function (res) {
+            console.log(res.target.response);
+        };
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(
+            JSON.stringify({
+                id: Number(document.getElementById('updateAccountID').value),
+                name: document.getElementById('updateAccountName').value,
+                email: document.getElementById('updateAccountEmail').value,
+                email_list: val,
+            })
+        );
+        console.log("updated account");
+    }
+
+
 </script>

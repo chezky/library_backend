@@ -20,13 +20,21 @@ func main() {
 
 	r := mux.NewRouter()
 
-	r.HandleFunc("/new", routes.NewBookHandler)
-	r.HandleFunc("/get", routes.GetBooksHandler)
-	r.HandleFunc("/delete", routes.DeleteBookHandler)
-	r.HandleFunc("/checkout", routes.CheckOutBookHandler)
-	r.HandleFunc("/get/id", routes.GetBookByIDHandler)
-	r.HandleFunc("/update", routes.UpdateBooksHandler)
-	r.HandleFunc("/search/title", routes.SearchByTitleHandler)
+	r.HandleFunc("/book/new", routes.NewBookHandler)
+	r.HandleFunc("/book/get", routes.GetBooksHandler)
+	r.HandleFunc("/book/delete", routes.DeleteBookHandler)
+	r.HandleFunc("/book/checkout", routes.CheckOutBookHandler)
+	r.HandleFunc("/book/get/id", routes.GetBookByIDHandler)
+	r.HandleFunc("/book/update", routes.UpdateBooksHandler)
+	r.HandleFunc("/book/search", routes.SearchBooksHandler)
+	r.HandleFunc("/account/new", routes.NewAccountHandler)
+	r.HandleFunc("/account/get", routes.GetAccountsHandler)
+	r.HandleFunc("/account/delete", routes.DeleteAccountHandler)
+	r.HandleFunc("/account/get/id", routes.GetAccountByIDHandler)
+	r.HandleFunc("/account/update", routes.UpdateAccountHandler)
+	r.HandleFunc("/account/search", routes.SearchAccountsHandler)
+
+
 
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 	http.Handle("/", r)
