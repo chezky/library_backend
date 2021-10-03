@@ -25,8 +25,6 @@ func Start() {
 		sendBooksEmail(db.FindEmailAccounts())
 	})
 	c.Start()
-
-	sendBooksEmail(db.FindEmailAccounts())
 }
 
 func sendBooksEmail(accounts []db.Account) {

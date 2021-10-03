@@ -3,6 +3,7 @@ module github.com/chezky/library
 go 1.13
 
 require (
+	github.com/aws/aws-sdk-go v1.40.54
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/schema v1.2.0
 	github.com/joho/godotenv v1.3.0
