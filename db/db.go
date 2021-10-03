@@ -10,41 +10,41 @@ import (
 )
 
 var (
-	db   *sql.DB
+	db *sql.DB
 )
 
 type Book struct {
-	ID int32 `json:"id"`
-	Title string `json:"title"`
-	Author string `json:"author"`
-	Available bool `json:"available"`
-	Customer string `json:"customer"`
-	CustomerID int32 `json:"customer_id""`
-	TimeStamp int64 `json:"time_stamp"`
+	ID         int32  `json:"id"`
+	Title      string `json:"title"`
+	Author     string `json:"author"`
+	Available  bool   `json:"available"`
+	Customer   string `json:"customer"`
+	CustomerID int32  `json:"customer_id""`
+	TimeStamp  int64  `json:"time_stamp"`
 }
 
 type BookList struct {
-	IDs []int32 `json:"ids"`
-	Customer string `json:"customer"`
-	CustomerID int32 `json:"customer_id"`
-	Available bool `json:"available"`
-	TimeStamp int64 `json:"time_stamp"`
+	IDs        []int32 `json:"ids"`
+	Customer   string  `json:"customer"`
+	CustomerID int32   `json:"customer_id"`
+	Available  bool    `json:"available"`
+	TimeStamp  int64   `json:"time_stamp"`
 }
 
 type Account struct {
-	ID int32 `json:"id"`
-	Name string `json:"name"`
-	Email string `json:"email"`
-	EmailList bool `json:"email_list"`
-	LastEmail int64 `json:"last_email"`
-	Books []Book `json:"books"`
-	BookCount int`json:"book_count"`
+	ID        int32  `json:"id"`
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	EmailList bool   `json:"email_list"`
+	LastEmail int64  `json:"last_email"`
+	Books     []Book `json:"books"`
+	BookCount int    `json:"book_count"`
 }
 
 type Search struct {
-	Books []Book `json:"books"`
+	Books    []Book    `json:"books"`
 	Accounts []Account `json:"accounts"`
-	Query string `json:"query"`
+	Query    string    `json:"query"`
 }
 
 func Start() {
@@ -92,10 +92,9 @@ func (b *Book) DeleteBook() error {
 
 func (b *Book) CheckOutBook() error {
 	var (
-		ts int64
+		ts  int64
 		msg string
 	)
-
 
 	if !b.Available {
 		msg = `SELECT name FROM accounts WHERE id=$1`
@@ -116,7 +115,7 @@ func (b *Book) CheckOutBook() error {
 	return nil
 }
 
-func (b *Book) GetBookByID() error  {
+func (b *Book) GetBookByID() error {
 	msg := `SELECT title, available, author FROM books WHERE id = $1`
 
 	if err := db.QueryRow(msg, b.ID).Scan(&b.Title, &b.Available, &b.Author); err != nil {
@@ -144,13 +143,13 @@ func (b *BookList) UpdateListBooks() {
 
 	for _, id := range b.IDs {
 		msg = `UPDATE books SET available = FALSE, customer_id=$1, customer = $2, ts = $3 WHERE id = $4`
-		if _, err := db.Exec(msg, b.CustomerID,  b.Customer, time.Now().Unix(), id); err != nil {
+		if _, err := db.Exec(msg, b.CustomerID, b.Customer, time.Now().Unix(), id); err != nil {
 			fmt.Println("error updating list book for id", id, err)
 		}
 	}
 }
 
-func (s *Search) SearchByTitle() error  {
+func (s *Search) SearchByTitle() error {
 	msg := `SELECT title, id, available, author FROM books WHERE title ILIKE $1 Or author ILIKE $1 OR customer ILIKE $1 order by title`
 
 	rows, err := db.Query(msg, "%"+s.Query+"%")
@@ -250,7 +249,7 @@ func GetAccounts() ([]Account, error) {
 		}
 
 		msg = `SELECT COUNT(*) FROM books WHERE customer_id = $1 AND available = FALSE`
-		if err :=  db.QueryRow(msg, account.ID).Scan(&account.BookCount); err != nil {
+		if err := db.QueryRow(msg, account.ID).Scan(&account.BookCount); err != nil {
 			fmt.Println("error getting count of books per customer")
 		}
 
@@ -269,7 +268,7 @@ func (a *Account) DeleteAccount() error {
 	return nil
 }
 
-func (a *Account) GetAccountByID() error  {
+func (a *Account) GetAccountByID() error {
 	msg := `SELECT name, email, email_list, last_email FROM accounts WHERE id = $1`
 
 	if err := db.QueryRow(msg, a.ID).Scan(&a.Name, &a.Email, &a.EmailList, &a.LastEmail); err != nil {
@@ -313,7 +312,7 @@ func (a *Account) UpdateAccount() error {
 	return nil
 }
 
-func (s *Search) SearchAccounts() error  {
+func (s *Search) SearchAccounts() error {
 	msg := `SELECT id, name, email, email_list FROM accounts WHERE name ILIKE $1 Or email ILIKE $1 ORDER BY name`
 
 	rows, err := db.Query(msg, "%"+s.Query+"%")
@@ -331,7 +330,7 @@ func (s *Search) SearchAccounts() error  {
 		}
 
 		msg = `SELECT COUNT(*) FROM books WHERE customer_id = $1`
-		if err :=  db.QueryRow(msg, account.ID).Scan(&account.BookCount); err != nil {
+		if err := db.QueryRow(msg, account.ID).Scan(&account.BookCount); err != nil {
 			fmt.Println("error getting count of books per customer")
 		}
 
@@ -341,8 +340,50 @@ func (s *Search) SearchAccounts() error  {
 	return nil
 }
 
+func FindEmailAccounts() []Account {
+	var accounts []Account
 
-func createBooksTable()  {
+	fmt.Println("Looking for accounts to email...")
+
+	// 604800 is one week
+	// 1209600 is two weeks
+	// Select an account id, if they have a book checked out for over two weeks, and if the account email_list is turned on, and if the account has not received an email in over a week.
+	msg := `SELECT DISTINCT accounts.id FROM accounts JOIN books ON accounts.id = books.customer_id WHERE books.available = FALSE and email_list = TRUE and last_email + 604800 < $1 and books.ts + 1209600 < $1`
+	rows, err := db.Query(msg, time.Now().Unix())
+	if err != nil {
+		fmt.Println("error getting accounts that need emails", err)
+		return accounts
+	}
+
+	for rows.Next() {
+		var account Account
+		if err := rows.Scan(&account.ID); err != nil {
+			fmt.Println("error getting id for account during email scan", err)
+			continue
+		}
+
+		if err := account.GetAccountByID(); err != nil {
+			fmt.Println("error getting account info for account id:", account.ID, err)
+			continue
+		}
+
+		// update the account to reflect that an email has been sent
+		msg = `UPDATE accounts SET last_email = $1 WHERE id = $2`
+		if _, err := db.Exec(msg, time.Now().Unix(), account.ID); err != nil {
+			continue
+		}
+
+		accounts = append(accounts, account)
+	}
+
+	if len(accounts) == 0 {
+		fmt.Println("No accounts to email today")
+	}
+
+	return accounts
+}
+
+func createBooksTable() {
 	msg := `CREATE TABLE IF NOT EXISTS books (
 	  id SERIAL PRIMARY KEY,
 	  title TEXT NOT NULL ,
@@ -353,13 +394,12 @@ func createBooksTable()  {
 	  customer_id INT
 	);`
 
-
 	if _, err := db.Exec(msg); err != nil {
 		fmt.Println("error creating table", err)
 	}
 }
 
-func createAccountsTable()  {
+func createAccountsTable() {
 	msg := `CREATE TABLE IF NOT EXISTS accounts (
 	  id SERIAL PRIMARY KEY,
 	  name TEXT NOT NULL ,
@@ -367,7 +407,6 @@ func createAccountsTable()  {
 	  email_list BOOLEAN DEFAULT true,
 	  last_email BIGINT
 	);`
-
 
 	if _, err := db.Exec(msg); err != nil {
 		fmt.Println("error creating table", err)

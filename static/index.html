@@ -1,89 +1,90 @@
 <body>
-    <div>
-        <h4>New Book</h4>
-        <input id="newTitle" name="title" value="title">
-        <input id="newAuthor" name="author" value="author">
-        <button onclick="SubmitNewBook()" type="button">Submit</button>
+<div>
+    <h4>New Book</h4>
+    <input id="newTitle" name="title" value="title">
+    <input id="newAuthor" name="author" value="author">
+    <button onclick="SubmitNewBook()" type="button">Submit</button>
+</div>
+
+<div>
+    <h4>Delete a book</h4>
+    <input id="deleteBook" name="delete" value="book ID">
+    <button onclick="DeleteBook()" type="button">Submit</button>
+</div>
+
+<div>
+    <div style="display: flex; flex-direction: column; padding-bottom:10px;: ">
+        <h4>Checkout a book</h4>
+        <label for="checkoutRadio">Checkout</label>
+        <input checked id="checkoutRadio" name="checkout" type="radio">
+        <label for="returnRadio">Return</label>
+        <input id="returnRadio" name="checkout" type="radio">
     </div>
+    <input id="checkoutID" name="checkout" value="book ID">
+    <input id="checkoutAccID" name="checkout" value="account ID">
+    <button onclick="CheckoutBook()" type="button">Submit</button>
+</div>
 
-    <div>
-        <h4>Delete a book</h4>
-        <input id="deleteBook" name="delete" value="book ID">
-        <button onclick="DeleteBook()" type="button">Submit</button>
-    </div>
-
-    <div>
-        <div style="display: flex; flex-direction: column; padding-bottom:10px;: ">
-            <h4>Checkout a book</h4>
-            <label for="checkoutRadio">Checkout</label>
-            <input type="radio" name="checkout" id="checkoutRadio" checked>
-            <label for="returnRadio">Return</label>
-            <input type="radio" name="checkout" id="returnRadio">
-        </div>
-        <input id="checkoutID" name="checkout" value="book ID">
-        <button onclick="CheckoutBook()" type="button">Submit</button>
-    </div>
-
-    <div>
-        <h4>Get book by ID</h4>
-        <input id="getBookByID" value="Book ID">
-        <button onclick="GetBookByID()">Get Book</button>
-        <div id="bookByID"></div>
-    </div>
+<div>
+    <h4>Get book by ID</h4>
+    <input id="getBookByID" value="Book ID">
+    <button onclick="GetBookByID()">Get Book</button>
+    <div id="bookByID"></div>
+</div>
 
 
-    <div>
-        <h4>Get All Books</h4>
-        <button onclick="GetAllBooks()">Get Books</button>
-    </div>
+<div>
+    <h4>Get All Books</h4>
+    <button onclick="GetAllBooks()">Get Books</button>
+</div>
 
-    <div id="booksList"></div>
+<div id="booksList"></div>
 
 
-    <div>
-        <h4>New Account</h4>
-        <input id="newName" name="name" value="name">
-        <input id="newEmail" name="email" value="email">
-        <button onclick="SubmitNewAccount()" type="button">Submit</button>
-    </div>
+<div>
+    <h4>New Account</h4>
+    <input id="newName" name="name" value="name">
+    <input id="newEmail" name="email" value="email">
+    <button onclick="SubmitNewAccount()" type="button">Submit</button>
+</div>
 
-    <div>
-        <h4>Get account by ID</h4>
-        <input id="getAccountByID" value="Account ID">
-        <button onclick="GetAccountByID()">Get Account</button>
-        <div id="accountByID"></div>
-    </div>
+<div>
+    <h4>Get account by ID</h4>
+    <input id="getAccountByID" value="Account ID">
+    <button onclick="GetAccountByID()">Get Account</button>
+    <div id="accountByID"></div>
+</div>
 
-    <div>
-        <h4>Update Account info</h4>
-        <input id="updateAccountID" value="ID">
-        <input id="updateAccountName" value="Name">
-        <input id="updateAccountEmail" value="Email">
-        <label for="emailListTrue">Email Me</label>
-        <input type="radio" name="updateAccount" id="emailListTrue" checked>
-        <label for="emailListFalse">Don't Email Me</label>
-        <input type="radio" name="updateAccount" id="emailListFalse">
-        <button onclick="UpdateAccount()">Submit</button>
-    </div>
+<div>
+    <h4>Update Account info</h4>
+    <input id="updateAccountID" value="ID">
+    <input id="updateAccountName" value="Name">
+    <input id="updateAccountEmail" value="Email">
+    <label for="emailListTrue">Email Me</label>
+    <input checked id="emailListTrue" name="updateAccount" type="radio">
+    <label for="emailListFalse">Don't Email Me</label>
+    <input id="emailListFalse" name="updateAccount" type="radio">
+    <button onclick="UpdateAccount()">Submit</button>
+</div>
 
-    <div>
-        <h4>Delete an account</h4>
-        <input id="deleteAccount" name="delete" value="account ID">
-        <button onclick="DeleteAccount()" type="button">Submit</button>
-    </div>
+<div>
+    <h4>Delete an account</h4>
+    <input id="deleteAccount" name="delete" value="account ID">
+    <button onclick="DeleteAccount()" type="button">Submit</button>
+</div>
 
-    <div>
-        <h4>Get All Accounts</h4>
-        <button onclick="GetAllAccounts()">Get Accounts</button>
-    </div>
+<div>
+    <h4>Get All Accounts</h4>
+    <button onclick="GetAllAccounts()">Get Accounts</button>
+</div>
 
-    <div id="accountsList"></div>
+<div id="accountsList"></div>
 
 </body>
 
 <script type="application/javascript">
     function CheckoutBook() {
-        let val = document.querySelector('input[name="checkout"]:checked').id == "checkoutRadio" ? false : true ;
+        let val = document.querySelector('input[name="checkout"]:checked').id == "checkoutRadio" ? false : true;
         let xhr = new XMLHttpRequest();
 
         xhr.open('POST', '/book/checkout', true);
@@ -95,14 +96,14 @@
             JSON.stringify({
                 id: Number(document.getElementById('checkoutID').value),
                 available: val,
-                customer_id: 8,
+                customer_id: Number(document.getElementById('checkoutAccID').value),
             })
         );
         console.log("checking out book");
         GetAllBooks();
     }
 
-    function SubmitNewBook () {
+    function SubmitNewBook() {
         let xhr = new XMLHttpRequest();
 
         xhr.open('POST', '/book/new', true);
@@ -120,7 +121,7 @@
         GetAllBooks();
     }
 
-    function DeleteBook () {
+    function DeleteBook() {
         let xhr = new XMLHttpRequest();
 
         xhr.open('POST', '/book/delete', true);
@@ -138,7 +139,7 @@
     }
 
 
-    function GetAllBooks () {
+    function GetAllBooks() {
         let xhr = new XMLHttpRequest();
 
         xhr.open('POST', '/book/get', true);
@@ -150,7 +151,7 @@
         console.log("getting books");
     }
 
-    function GetBookByID () {
+    function GetBookByID() {
         let xhr = new XMLHttpRequest();
 
         xhr.open('POST', '/book/get/id', true);
@@ -186,7 +187,7 @@
         parent.appendChild(ol)
     }
 
-    function SubmitNewAccount () {
+    function SubmitNewAccount() {
         let xhr = new XMLHttpRequest();
 
         xhr.open('POST', '/account/new', true);
@@ -203,19 +204,19 @@
         console.log("submitted new account");
     }
 
-    function GetAllAccounts () {
+    function GetAllAccounts() {
         let xhr = new XMLHttpRequest();
 
         xhr.open('POST', '/account/get', true);
         xhr.onload = function (res) {
-            document.getElementById("accountsList").innerHTML=res.target.response;
+            document.getElementById("accountsList").innerHTML = res.target.response;
         };
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.send();
         console.log("getting accounts");
     }
 
-    function GetAccountByID () {
+    function GetAccountByID() {
         let xhr = new XMLHttpRequest();
 
         xhr.open('POST', '/account/get/id', true);
@@ -235,8 +236,7 @@
     }
 
 
-
-    function DeleteAccount () {
+    function DeleteAccount() {
         let xhr = new XMLHttpRequest();
 
         xhr.open('POST', '/account/delete', true);
@@ -255,7 +255,7 @@
 
     function UpdateAccount() {
         let xhr = new XMLHttpRequest();
-        let val = document.querySelector('input[name="updateAccount"]:checked').id == "emailListTrue" ? false : true ;
+        let val = document.querySelector('input[name="updateAccount"]:checked').id == "emailListTrue" ? false : true;
 
         xhr.open('POST', '/account/update', true);
         xhr.onload = function (res) {

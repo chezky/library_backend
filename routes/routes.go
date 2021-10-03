@@ -14,7 +14,7 @@ import (
 
 var decoder = schema.NewDecoder()
 
-func NewBookHandler(w http.ResponseWriter, r *http.Request)  {
+func NewBookHandler(w http.ResponseWriter, r *http.Request) {
 	var b db.Book
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -31,7 +31,7 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	if err := b.NewBook(); err != nil{
+	if err := b.NewBook(); err != nil {
 		fmt.Println("error inserting book into db", b.Title, err)
 	}
 
@@ -39,7 +39,7 @@ func NewBookHandler(w http.ResponseWriter, r *http.Request)  {
 	fmt.Fprint(w, fmt.Sprintf("%d", b.ID))
 }
 
-func DeleteBookHandler(w http.ResponseWriter, r *http.Request)  {
+func DeleteBookHandler(w http.ResponseWriter, r *http.Request) {
 	var b db.Book
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -55,7 +55,7 @@ func DeleteBookHandler(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	if err := b.DeleteBook(); err != nil{
+	if err := b.DeleteBook(); err != nil {
 		fmt.Println("error deleting book", b.ID, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -64,7 +64,7 @@ func DeleteBookHandler(w http.ResponseWriter, r *http.Request)  {
 	fmt.Fprint(w, "success")
 }
 
-func CheckOutBookHandler(w http.ResponseWriter, r *http.Request)  {
+func CheckOutBookHandler(w http.ResponseWriter, r *http.Request) {
 	var b db.Book
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -82,7 +82,7 @@ func CheckOutBookHandler(w http.ResponseWriter, r *http.Request)  {
 
 	fmt.Println("customerID is:", b.CustomerID)
 
-	if err := b.CheckOutBook(); err != nil{
+	if err := b.CheckOutBook(); err != nil {
 		fmt.Println("error checking out book", b.ID, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -91,7 +91,7 @@ func CheckOutBookHandler(w http.ResponseWriter, r *http.Request)  {
 	fmt.Fprint(w, "success")
 }
 
-func GetBookByIDHandler(w http.ResponseWriter, r *http.Request)  {
+func GetBookByIDHandler(w http.ResponseWriter, r *http.Request) {
 	var b db.Book
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -107,7 +107,7 @@ func GetBookByIDHandler(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	if err := b.GetBookByID(); err != nil{
+	if err := b.GetBookByID(); err != nil {
 		fmt.Println("error getting book", b.ID, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -124,7 +124,7 @@ func GetBookByIDHandler(w http.ResponseWriter, r *http.Request)  {
 }
 
 //UpdateBooksHandler either returns or checks out a list of book. Requires a name to be given when the books are being checked out.
-func UpdateBooksHandler(w http.ResponseWriter, r *http.Request)  {
+func UpdateBooksHandler(w http.ResponseWriter, r *http.Request) {
 	var b db.BookList
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -146,7 +146,7 @@ func UpdateBooksHandler(w http.ResponseWriter, r *http.Request)  {
 }
 
 //SearchBooksHandler either returns or checks out a list of book. Requires a name to be given when the books are being checked out.
-func SearchBooksHandler(w http.ResponseWriter, r *http.Request)  {
+func SearchBooksHandler(w http.ResponseWriter, r *http.Request) {
 	var s db.Search
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -178,7 +178,7 @@ func SearchBooksHandler(w http.ResponseWriter, r *http.Request)  {
 	fmt.Fprint(w, string(res))
 }
 
-func GetBooksHandler(w http.ResponseWriter, r *http.Request)  {
+func GetBooksHandler(w http.ResponseWriter, r *http.Request) {
 	b, err := db.GetBooks()
 	if err != nil {
 		fmt.Println("error getting books", err)
@@ -195,7 +195,7 @@ func GetBooksHandler(w http.ResponseWriter, r *http.Request)  {
 	fmt.Fprint(w, string(res))
 }
 
-func NewAccountHandler(w http.ResponseWriter, r *http.Request)  {
+func NewAccountHandler(w http.ResponseWriter, r *http.Request) {
 	var a db.Account
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -212,7 +212,7 @@ func NewAccountHandler(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	if err := a.NewAccount(); err != nil{
+	if err := a.NewAccount(); err != nil {
 		fmt.Println("error inserting new account into db", a.Name, err)
 	}
 
@@ -220,7 +220,7 @@ func NewAccountHandler(w http.ResponseWriter, r *http.Request)  {
 	fmt.Fprint(w, fmt.Sprintf("%d", a.ID))
 }
 
-func GetAccountsHandler(w http.ResponseWriter, r *http.Request)  {
+func GetAccountsHandler(w http.ResponseWriter, r *http.Request) {
 	b, err := db.GetAccounts()
 	if err != nil {
 		fmt.Println("error getting accounts", err)
@@ -237,7 +237,7 @@ func GetAccountsHandler(w http.ResponseWriter, r *http.Request)  {
 	fmt.Fprint(w, string(res))
 }
 
-func DeleteAccountHandler(w http.ResponseWriter, r *http.Request)  {
+func DeleteAccountHandler(w http.ResponseWriter, r *http.Request) {
 	var a db.Account
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -253,7 +253,7 @@ func DeleteAccountHandler(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	if err := a.DeleteAccount(); err != nil{
+	if err := a.DeleteAccount(); err != nil {
 		fmt.Println("error deleting account id number:", a.ID, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -264,7 +264,7 @@ func DeleteAccountHandler(w http.ResponseWriter, r *http.Request)  {
 	fmt.Fprint(w, "success")
 }
 
-func GetAccountByIDHandler(w http.ResponseWriter, r *http.Request)  {
+func GetAccountByIDHandler(w http.ResponseWriter, r *http.Request) {
 	var a db.Account
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -280,7 +280,7 @@ func GetAccountByIDHandler(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	if err := a.GetAccountByID(); err != nil{
+	if err := a.GetAccountByID(); err != nil {
 		fmt.Println("error getting account number:", a.ID, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -296,7 +296,7 @@ func GetAccountByIDHandler(w http.ResponseWriter, r *http.Request)  {
 	fmt.Fprint(w, string(res))
 }
 
-func UpdateAccountHandler(w http.ResponseWriter, r *http.Request)  {
+func UpdateAccountHandler(w http.ResponseWriter, r *http.Request) {
 	var a db.Account
 
 	body, err := ioutil.ReadAll(r.Body)
@@ -313,7 +313,7 @@ func UpdateAccountHandler(w http.ResponseWriter, r *http.Request)  {
 		return
 	}
 
-	if err := a.UpdateAccount(); err != nil{
+	if err := a.UpdateAccount(); err != nil {
 		fmt.Println("error inserting updated account into db:", a.Name, err)
 	}
 
@@ -321,7 +321,7 @@ func UpdateAccountHandler(w http.ResponseWriter, r *http.Request)  {
 	fmt.Fprint(w, "success")
 }
 
-func SearchAccountsHandler(w http.ResponseWriter, r *http.Request)  {
+func SearchAccountsHandler(w http.ResponseWriter, r *http.Request) {
 	var s db.Search
 
 	body, err := ioutil.ReadAll(r.Body)

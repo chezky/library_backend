@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/chezky/library/db"
+	"github.com/chezky/library/mail"
 	"github.com/chezky/library/routes"
 	"log"
 	"net/http"
@@ -17,6 +18,7 @@ func main() {
 	}
 
 	db.Start()
+	mail.Start()
 
 	r := mux.NewRouter()
 
@@ -34,12 +36,11 @@ func main() {
 	r.HandleFunc("/account/update", routes.UpdateAccountHandler)
 	r.HandleFunc("/account/search", routes.SearchAccountsHandler)
 
-
-
 	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./static/")))
 	http.Handle("/", r)
 
 	port := fmt.Sprintf(":%d", 8080)
 	fmt.Println("server running on port", port)
+
 	log.Fatal(http.ListenAndServe(port, r))
 }
